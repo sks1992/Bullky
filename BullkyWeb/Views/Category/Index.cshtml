@@ -18,7 +18,8 @@ define its return type like  here we send a list of Category so we need to write
         </tr>
     </thead>
     <tbody>
-        @foreach(var category in Model)
+        @* To Access Each Element in Category List We Use foreach Loop *@
+        @foreach (var category in Model)
         {
             <tr>
                 <th>
@@ -29,7 +30,7 @@ define its return type like  here we send a list of Category so we need to write
                 </th>
             </tr>
         }
-        
+
     </tbody>
 
 </table>
