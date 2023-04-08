@@ -20,6 +20,24 @@ namespace BullkyWeb.Controllers
             //send category list to view
             return View(categoryList);
         }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Category category)
+        {
+            if (ModelState.IsValid) {
+                _db.Categories.Add(category);
+                //save the above changes in db
+                _db.SaveChanges();
+                //RedirectToAction it will take to index page
+                return RedirectToAction("Index");
+            }
+            return View();
+        }
     }
 }
     

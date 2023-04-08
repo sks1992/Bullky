@@ -4,33 +4,47 @@ define its return type like  here we send a list of Category so we need to write
 
 @model List<Category>
 
-<h1>Catrgory List</h1>
-@*To Create A Table *@
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>
-                Category name
-            </th>
-            <th>
-                Display Order
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @* To Access Each Element in Category List We Use foreach Loop *@
-        @foreach (var category in Model)
-        {
+<div class="container">
+    @* A Row Contain 12 parts ; padding-Top =>pt-4 ;padding-bottom=>pb-3*@
+    <div class="row pt-4 pb-3">
+        <div class="col-6">
+            <h2 class="text-primary">Category List</h2>
+        </div>
+        <div class="col-6">
+            <a asp-controller="Category" asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New Category
+            </a>
+        </div>
+    </div>
+
+    @*To Create A Table *@
+    <table class="table table-bordered table-striped">
+        <thead>
             <tr>
                 <th>
-                    @category.Name
+                    Category name
                 </th>
                 <th>
-                    @category.DisplayOrder
+                    Display Order
                 </th>
             </tr>
-        }
+        </thead>
+        <tbody>
+            @* To Access Each Element in Category List We Use foreach Loop *@
+            @foreach (var category in Model.OrderBy(u => u.DisplayOrder))
+            {
+                <tr>
+                    <th>
+                        @category.Name
+                    </th>
+                    <th>
+                        @category.DisplayOrder
+                    </th>
+                </tr>
+            }
 
-    </tbody>
+        </tbody>
 
-</table>
+    </table>
+
+</div>
