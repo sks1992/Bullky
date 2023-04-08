@@ -3,6 +3,14 @@ define its return type like  here we send a list of Category so we need to write
 @model List<Category> *@
 
 @model List<Category>
+@* @if(TempData["success"] != null)
+{
+    <h2>@TempData["success"]</h2>
+} 
+Or 
+<partial name="_Notification" />
+*@
+
 
 <div class="container">
     @* A Row Contain 12 parts ; padding-Top =>pt-4 ;padding-bottom=>pb-3*@
@@ -27,6 +35,7 @@ define its return type like  here we send a list of Category so we need to write
                 <th>
                     Display Order
                 </th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -40,6 +49,17 @@ define its return type like  here we send a list of Category so we need to write
                     <th>
                         @category.DisplayOrder
                     </th>
+                    <td>
+                        <div class="w-75 btn-gropup" role="group">
+                            @*To Pass an id to Edit Method we use asp-route-id ="@category.Id" *@
+                            <a asp-controller="Category" asp-action="Edit" asp-route-id ="@category.Id"  class="btn btn-primary mx-2">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                            <a asp-controller="Category" asp-action="Delete" asp-route-id="@category.Id" class="btn btn-danger mx-2">
+                                <i class="bi bi-trash-fill"></i> Delete
+                            </a>
+                        </div>
+                    </td>
                 </tr>
             }
 
