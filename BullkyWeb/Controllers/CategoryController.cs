@@ -18,7 +18,7 @@ namespace BullkyWeb.Controllers
             //get catrgory data from db
             List<Category> categoryList = _db.Categories.ToList();
             //send category list to view
-            return View();
+            return View(categoryList);
         }
     }
 }

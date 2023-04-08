@@ -1,1 +1,35 @@
-﻿<h1>Catrgory List</h1>
+﻿@*If send some data in view ,to retrive that data we need to add model and
+define its return type like  here we send a list of Category so we need to write
+@model List<Category> *@
+
+@model List<Category>
+
+<h1>Catrgory List</h1>
+@*To Create A Table *@
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>
+                Category name
+            </th>
+            <th>
+                Display Order
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var category in Model)
+        {
+            <tr>
+                <th>
+                    @category.Name
+                </th>
+                <th>
+                    @category.DisplayOrder
+                </th>
+            </tr>
+        }
+        
+    </tbody>
+
+</table>
