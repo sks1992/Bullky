@@ -1,11 +1,11 @@
 ﻿
-using BullkyBook.DataAccess.Data;
 using BullkyBook.DataAccess.Repository.IRepository;
 using BullkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BullkyBookWeb.Controllers
+namespace BullkyBookWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
         //access db because dependency injection when we add applicationDvContext
@@ -16,15 +16,21 @@ namespace BullkyBookWeb.Controllers
             _db = db;
         }*/
 
-        private readonly ICategoryRepository _categoryRepository;
-        public CategoryController(ICategoryRepository categoryRepository)
+        /* private readonly ICategoryRepository _categoryRepository;
+         public CategoryController(ICategoryRepository categoryRepository)
+         {
+             _categoryRepository = categoryRepository;
+         }*/
+
+        private readonly IUnitOfWork _unitOfWork;
+        public CategoryController(IUnitOfWork unitOfWork)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
         }
         public IActionResult Index()
         {
             //get catrgory data from db
-            List<Category> categoryList = _categoryRepository.GetAll().ToList();
+            List<Category> categoryList = _unitOfWork.CategoryRepository.GetAll().ToList();
             //send category list to view
             return View(categoryList);
         }
@@ -48,9 +54,9 @@ namespace BullkyBookWeb.Controllers
             }*/
             if (ModelState.IsValid)
             {
-                _categoryRepository.Add(category);
+                _unitOfWork.CategoryRepository.Add(category);
                 //save the above changes in db
-                _categoryRepository.Save();
+                _unitOfWork.Save();
                 TempData["success"] = "Category Created SuccessFully";
                 //RedirectToAction it will take to index page
                 return RedirectToAction("Index");
@@ -66,7 +72,7 @@ namespace BullkyBookWeb.Controllers
             }
             //find only work with primary keys
             //Category categoryFromDb =_db.Categories.Find(id);
-            Category categoryFromDb = _categoryRepository.Get(u => u.Id == id);
+            Category categoryFromDb = _unitOfWork.CategoryRepository.Get(u => u.Id == id);
             //Category categoryFromDb1 =_db.Categories.Where(u=>u.Id ==id).FirstOrDefault();
 
             if (categoryFromDb == null)
@@ -76,13 +82,14 @@ namespace BullkyBookWeb.Controllers
 
             return View(categoryFromDb);
         }
+
         [HttpPost]
         public IActionResult Edit(Category category)
         {
             if (ModelState.IsValid)
             {
-                _categoryRepository.Update(category);
-                _categoryRepository.Save();
+                _unitOfWork.CategoryRepository.Update(category);
+                _unitOfWork.Save();
                 TempData["success"] = "Category Updated SuccessFully";
                 return RedirectToAction("Index");
             }
@@ -93,7 +100,7 @@ namespace BullkyBookWeb.Controllers
         {
             if (id == 0 && id == null)
             { return NotFound(); }
-            Category categoryFromDb = _categoryRepository.Get(u => u.Id == id);
+            Category categoryFromDb = _unitOfWork.CategoryRepository.Get(u => u.Id == id);
             if (categoryFromDb == null)
             {
                 return NotFound();
@@ -104,13 +111,13 @@ namespace BullkyBookWeb.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost(int? id)
         {
-            Category categoryFromDb = _categoryRepository.Get(u => u.Id == id);
+            Category categoryFromDb = _unitOfWork.CategoryRepository.Get(u => u.Id == id);
             if (categoryFromDb == null)
             {
                 return NotFound();
             }
-            _categoryRepository.Remove(categoryFromDb);
-            _categoryRepository.Save();
+            _unitOfWork.CategoryRepository.Remove(categoryFromDb);
+            _unitOfWork.Save();
             TempData["success"] = "Category Deleted SuccessFully";
 
             return RedirectToAction("Index");
