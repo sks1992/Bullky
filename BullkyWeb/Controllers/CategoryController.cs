@@ -1,10 +1,10 @@
 ﻿
-using Bullky.DataAccess.Data;
-using Bullky.DataAccess.Repository.IRepository;
-using Bullky.Models;
+using BullkyBook.DataAccess.Data;
+using BullkyBook.DataAccess.Repository.IRepository;
+using BullkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BullkyWeb.Controllers
+namespace BullkyBookWeb.Controllers
 {
     public class CategoryController : Controller
     {

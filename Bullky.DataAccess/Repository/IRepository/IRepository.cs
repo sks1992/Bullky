@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Bullky.DataAccess.Repository.IRepository
+namespace BullkyBook.DataAccess.Repository.IRepository
 {
     public interface IRepository<T> where T : class
     {

@@ -1,11 +1,11 @@
-﻿using Bullky.Models;
+﻿using BullkyBook.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bullky.DataAccess.Repository.IRepository
+namespace BullkyBook.DataAccess.Repository.IRepository
 {
     public interface ICategoryRepository :IRepository<Category>
     {

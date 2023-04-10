@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Bullky.Models
+namespace BullkyBook.Models
 {
     public class Category
     {

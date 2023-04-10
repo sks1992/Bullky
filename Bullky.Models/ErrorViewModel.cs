@@ -1,4 +1,4 @@
-namespace Bullky.Models
+namespace BullkyBook.Models
 {
     public class ErrorViewModel
     {

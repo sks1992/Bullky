@@ -1,7 +1,7 @@
-﻿using Bullky.DataAccess.Data;
-using Bullky.DataAccess.Repository.IRepository;
-using Bullky.Models;
-namespace Bullky.DataAccess.Repository
+﻿using BullkyBook.DataAccess.Data;
+using BullkyBook.DataAccess.Repository.IRepository;
+using BullkyBook.Models;
+namespace BullkyBook.DataAccess.Repository
 {
     public class CategoryRepository : Repository<Category>, ICategoryRepository
     {

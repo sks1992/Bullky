@@ -1,8 +1,8 @@
-﻿using Bullky.Models;
+﻿using BullkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace BullkyWeb.Controllers
+namespace BullkyBookWeb.Controllers
 {
     public class HomeController : Controller
     {

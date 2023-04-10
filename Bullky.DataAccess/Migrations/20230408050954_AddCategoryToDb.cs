@@ -4,7 +4,7 @@
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Bullky.DataAccess.Migrations
+namespace BullkyBook.DataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class AddCategoryToDb : Migration

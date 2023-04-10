@@ -1,9 +1,9 @@
-﻿using Bullky.DataAccess.Data;
-using Bullky.DataAccess.Repository.IRepository;
+﻿using BullkyBook.DataAccess.Data;
+using BullkyBook.DataAccess.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Bullky.DataAccess.Repository
+namespace BullkyBook.DataAccess.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {

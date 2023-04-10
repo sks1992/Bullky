@@ -1,6 +1,6 @@
-using Bullky.DataAccess.Data;
-using Bullky.DataAccess.Repository;
-using Bullky.DataAccess.Repository.IRepository;
+using BullkyBook.DataAccess.Data;
+using BullkyBook.DataAccess.Repository;
+using BullkyBook.DataAccess.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
