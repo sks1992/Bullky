@@ -1,5 +1,6 @@
-﻿using BullkyWeb.Data;
-using BullkyWeb.Models;
+﻿
+using Bullky.DataAccess.Data;
+using Bullky.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BullkyWeb.Controllers

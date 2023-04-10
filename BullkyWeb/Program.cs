@@ -1,4 +1,4 @@
-using BullkyWeb.Data;
+using Bullky.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
