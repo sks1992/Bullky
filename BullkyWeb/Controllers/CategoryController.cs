@@ -1,5 +1,6 @@
 ﻿
 using Bullky.DataAccess.Data;
+using Bullky.DataAccess.Repository.IRepository;
 using Bullky.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,15 +10,21 @@ namespace BullkyWeb.Controllers
     {
         //access db because dependency injection when we add applicationDvContext
         //to progtam.cs we can access it as DI.
-        private readonly ApplicationDbContext _db;
+        /*private readonly ApplicationDbContext _db;
         public CategoryController(ApplicationDbContext db)
         {
             _db = db;
+        }*/
+
+        private readonly ICategoryRepository _categoryRepository;
+        public CategoryController(ICategoryRepository categoryRepository)
+        {
+            _categoryRepository = categoryRepository;
         }
         public IActionResult Index()
         {
             //get catrgory data from db
-            List<Category> categoryList = _db.Categories.ToList();
+            List<Category> categoryList = _categoryRepository.GetAll().ToList();
             //send category list to view
             return View(categoryList);
         }
@@ -41,10 +48,10 @@ namespace BullkyWeb.Controllers
             }*/
             if (ModelState.IsValid)
             {
-                _db.Categories.Add(category);
+                _categoryRepository.Add(category);
                 //save the above changes in db
-                _db.SaveChanges();
-                TempData["success"] ="Category Created SuccessFully";
+                _categoryRepository.Save();
+                TempData["success"] = "Category Created SuccessFully";
                 //RedirectToAction it will take to index page
                 return RedirectToAction("Index");
             }
@@ -59,7 +66,7 @@ namespace BullkyWeb.Controllers
             }
             //find only work with primary keys
             //Category categoryFromDb =_db.Categories.Find(id);
-            Category categoryFromDb = _db.Categories.FirstOrDefault(u => u.Id == id);
+            Category categoryFromDb = _categoryRepository.Get(u => u.Id == id);
             //Category categoryFromDb1 =_db.Categories.Where(u=>u.Id ==id).FirstOrDefault();
 
             if (categoryFromDb == null)
@@ -74,8 +81,8 @@ namespace BullkyWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Categories.Update(category);
-                _db.SaveChanges();
+                _categoryRepository.Update(category);
+                _categoryRepository.Save();
                 TempData["success"] = "Category Updated SuccessFully";
                 return RedirectToAction("Index");
             }
@@ -86,7 +93,7 @@ namespace BullkyWeb.Controllers
         {
             if (id == 0 && id == null)
             { return NotFound(); }
-            Category categoryFromDb = _db.Categories.FirstOrDefault(u => u.Id == id);
+            Category categoryFromDb = _categoryRepository.Get(u => u.Id == id);
             if (categoryFromDb == null)
             {
                 return NotFound();
@@ -97,13 +104,13 @@ namespace BullkyWeb.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost(int? id)
         {
-            Category categoryFromDb = _db.Categories.FirstOrDefault(u => u.Id == id);
+            Category categoryFromDb = _categoryRepository.Get(u => u.Id == id);
             if (categoryFromDb == null)
             {
                 return NotFound();
             }
-            _db.Categories.Remove(categoryFromDb);
-            _db.SaveChanges();
+            _categoryRepository.Remove(categoryFromDb);
+            _categoryRepository.Save();
             TempData["success"] = "Category Deleted SuccessFully";
 
             return RedirectToAction("Index");
