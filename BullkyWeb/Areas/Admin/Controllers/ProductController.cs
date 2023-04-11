@@ -10,14 +10,16 @@ namespace BullkyBookWeb.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public ProductController(IUnitOfWork unitOfWork)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
             //get product data from db
-            List<Product> productList = _unitOfWork.ProductRepository.GetAll().ToList();
+            List<Product> productList = _unitOfWork.ProductRepository.GetAll(includeProperties: "Category").ToList();
             return View(productList);
         }
 
@@ -30,11 +32,11 @@ namespace BullkyBookWeb.Areas.Admin.Controllers
                     Text = u.Name,
                     Value = u.Id.ToString()
                 }),
-            Product = new Product()
+                Product = new Product()
             };
 
             //for create page
-            if (id == null|| id == 0)
+            if (id == null || id == 0)
             {
                 return View(productVM);
             }
@@ -52,7 +54,42 @@ namespace BullkyBookWeb.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                _unitOfWork.ProductRepository.Add(productVM.Product);
+                //get the path of wwwroot directiory folder path
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                if (file != null)
+                {
+                    //give file a random name
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string productPath = Path.Combine(wwwRootPath, @"images\product");
+
+                    if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
+                    {
+                        //delete the old image
+                        var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+
+                    productVM.Product.ImageUrl = @"\images\product\" + fileName;
+                }
+
+                if (productVM.Product.Id == 0)
+                {
+                    _unitOfWork.ProductRepository.Add(productVM.Product);
+                }
+                else
+                {
+                    _unitOfWork.ProductRepository.Update(productVM.Product);
+                }
+
+
                 _unitOfWork.Save();
                 TempData["success"] = "Product Created SuccessFully";
                 return RedirectToAction("Index");
@@ -136,7 +173,7 @@ namespace BullkyBookWeb.Areas.Admin.Controllers
             return View();
         }
 
-        public IActionResult Delete(int? id)
+/*        public IActionResult Delete(int? id)
         {
             if (id == 0 && id == null)
             {
@@ -148,8 +185,9 @@ namespace BullkyBookWeb.Areas.Admin.Controllers
                 return NotFound();
             }
             return View(productFromDb);
-        }
-        [HttpPost, ActionName("Delete")]
+        }*/
+
+       /* [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost(int? id)
         {
             Product productFromDb = _unitOfWork.ProductRepository.Get(u => u.Id == id);
@@ -161,6 +199,34 @@ namespace BullkyBookWeb.Areas.Admin.Controllers
             _unitOfWork.Save();
             TempData["success"] = "Product Deleted SuccessFully";
             return RedirectToAction("Index");
+        }*/
+
+        #region
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            List<Product> productList = _unitOfWork.ProductRepository.GetAll(includeProperties: "Category").ToList();
+            return Json(new { data = productList });
         }
+
+        [HttpDelete]
+        public IActionResult Delete(int? id)
+        {
+            var productToBeDeleted = _unitOfWork.ProductRepository.Get(u => u.Id == id);
+            if (productToBeDeleted == null)
+            {
+                return Json(new { success = false, message = "Error While Deleting" });
+            }
+            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, productToBeDeleted.ImageUrl.TrimStart('\\'));
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+            }
+            _unitOfWork.ProductRepository.Remove(productToBeDeleted);
+            _unitOfWork.Save();
+
+            return Json(new { success = true, message = "Delete Successfully" });
+        }
+        #endregion
     }
 }

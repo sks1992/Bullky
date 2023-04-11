@@ -6,10 +6,10 @@ namespace BullkyBook.DataAccess.Repository.IRepository
     {
         //assume T-> Category class
         //functio to get all the class data mean get All CategoryData
-        IEnumerable<T> GetAll();
+        IEnumerable<T> GetAll(string? includeProperties = null);
         //FirstOrDefault(u=>u.Id==id) is = to Expression<Func<T, bool>> filter
         //function to get asingle class data meam get Single Category data
-        T Get(Expression<Func<T, bool>> filter);
+        T Get(Expression<Func<T, bool>> filter, string? includeProperties = null);
         void Add(T entity);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entity);
