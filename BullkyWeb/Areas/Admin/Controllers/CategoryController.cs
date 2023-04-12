@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BullkyBookWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles =SD.Role_Admin)]
+    //[Authorize(Roles =SD.Role_Admin)]
     public class CategoryController : Controller
     {
         //access db because dependency injection when we add applicationDvContext

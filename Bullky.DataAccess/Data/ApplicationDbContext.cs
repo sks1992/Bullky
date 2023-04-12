@@ -15,6 +15,7 @@ namespace BullkyBook.DataAccess.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Company> Companies { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +26,39 @@ namespace BullkyBook.DataAccess.Data
                 new Category { Id = 1, Name = "Action", DisplayOrder = 1 },
                 new Category { Id = 2, Name = "Sci-fi", DisplayOrder = 2 },
                 new Category { Id = 3, Name = "History", DisplayOrder = 3 }
+                );
+
+            modelBuilder.Entity<Company>().HasData(
+                new Company
+                {
+                    Id = 1,
+                    Name = "Tata",
+                    PhoneNumber = "123456780",
+                    City = "Bikaner",
+                    StreetAddress = "35 F Sector JNV",
+                    State = "Rajasthan",
+                    PostalCode = "334001"
+                },
+                new Company
+                {
+                    Id = 2,
+                    Name = "Honda",
+                    PhoneNumber = "123456780",
+                    City = "Bikaner",
+                    StreetAddress = "35 F Sector JNV",
+                    State = "Rajasthan",
+                    PostalCode = "334001"
+                },
+                new Company
+                {
+                    Id = 3,
+                    Name = "Nokia",
+                    PhoneNumber = "123456780",
+                    City = "Bikaner",
+                    StreetAddress = "35 F Sector JNV",
+                    State = "Rajasthan",
+                    PostalCode = "334001"
+                }
                 );
 
             modelBuilder.Entity<Product>().HasData(
@@ -40,7 +74,7 @@ namespace BullkyBook.DataAccess.Data
                     Price50 = 85,
                     Price100 = 80,
                     CategoryId = 1,
-                    ImageUrl=""
+                    ImageUrl = ""
                 },
                 new Product
                 {
