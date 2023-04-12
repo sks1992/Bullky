@@ -1,11 +1,14 @@
 ﻿
 using BullkyBook.DataAccess.Repository.IRepository;
 using BullkyBook.Models;
+using BullkyBook.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BullkyBookWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles =SD.Role_Admin)]
     public class CategoryController : Controller
     {
         //access db because dependency injection when we add applicationDvContext
