@@ -1,7 +1,9 @@
 ﻿using BullkyBook.DataAccess.Repository.IRepository;
 using BullkyBook.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BullkyBookWeb.Areas.Customer.Controllers
 {
@@ -11,7 +13,7 @@ namespace BullkyBookWeb.Areas.Customer.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unitOfWork;
 
-        public HomeController(ILogger<HomeController> logger,IUnitOfWork unitOfWork)
+        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
@@ -19,13 +21,50 @@ namespace BullkyBookWeb.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<Product> productList =_unitOfWork.ProductRepository.GetAll(includeProperties:"Category");
+            IEnumerable<Product> productList = _unitOfWork.ProductRepository.GetAll(includeProperties: "Category");
             return View(productList);
         }
         public IActionResult Details(int productId)
         {
-            Product product = _unitOfWork.ProductRepository.Get(u=>u.Id== productId, includeProperties: "Category");
-            return View(product);
+            ShoppingCart cart = new()
+            {
+                Product = _unitOfWork.ProductRepository.Get(u => u.Id == productId, includeProperties: "Category"),
+                Count = 1,
+                ProductId = productId
+            };
+
+        
+            return View(cart);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Details(ShoppingCart shoppingCart) 
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+           var userId =claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            
+            shoppingCart.ApplicationUserId = userId;
+
+            ShoppingCart cartFromDb =_unitOfWork.ShoppingCartRepository.Get(u=>u.ApplicationUserId ==userId
+             && u.ProductId== shoppingCart.ProductId);
+
+            if(cartFromDb != null)
+            {
+                //shopping cart exist
+                cartFromDb.Count += shoppingCart.Count;
+                _unitOfWork.ShoppingCartRepository.Update(cartFromDb);
+            }
+            else
+            {
+                //add card recoprd
+                _unitOfWork.ShoppingCartRepository.Add(shoppingCart);
+            }
+
+            TempData["success"] = "Card update Successful";
+            _unitOfWork.Save();
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult Privacy()
