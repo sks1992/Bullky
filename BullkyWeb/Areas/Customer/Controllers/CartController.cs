@@ -103,7 +103,7 @@ namespace BullkyBookWeb.Areas.Customer.Controllers
 
             ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCartRepository.GetAll(u => u.ApplicationUserId == userId,
                 includeProperties: "Product");
-           
+
             ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
             ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
 
@@ -115,7 +115,7 @@ namespace BullkyBookWeb.Areas.Customer.Controllers
                 ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
             }
 
-            if(applicationUser.CompanyId.GetValueOrDefault() == 0)
+            if (applicationUser.CompanyId.GetValueOrDefault() == 0)
             {
                 ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
                 ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
@@ -130,12 +130,12 @@ namespace BullkyBookWeb.Areas.Customer.Controllers
             _unitOfWork.OrderHeaderRepository.Add(ShoppingCartVM.OrderHeader);
             _unitOfWork.Save();
 
-            foreach(var cart in ShoppingCartVM.ShoppingCartList)
+            foreach (var cart in ShoppingCartVM.ShoppingCartList)
             {
                 OrderDetail orderDetail = new OrderDetail()
                 {
                     ProductId = cart.ProductId,
-                    OrderHeaderId =ShoppingCartVM.OrderHeader.ID,
+                    OrderHeaderId = ShoppingCartVM.OrderHeader.ID,
                     Price = cart.Price,
                     Count = cart.Count,
                 };
@@ -174,7 +174,6 @@ namespace BullkyBookWeb.Areas.Customer.Controllers
                     options.LineItems.Add(sessionLineItem);
                 }
 
-
                 var service = new SessionService();
                 Session session = service.Create(options);
                 _unitOfWork.OrderHeaderRepository.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.ID, session.Id, session.PaymentIntentId);
@@ -183,7 +182,7 @@ namespace BullkyBookWeb.Areas.Customer.Controllers
                 return new StatusCodeResult(303);
             }
 
-            return RedirectToAction(nameof(OrderConfirmation) ,new { id= ShoppingCartVM.OrderHeader.ID});
+            return RedirectToAction(nameof(OrderConfirmation), new { id = ShoppingCartVM.OrderHeader.ID });
         }
 
         public IActionResult OrderConfirmation(int id)
@@ -226,11 +225,14 @@ namespace BullkyBookWeb.Areas.Customer.Controllers
 
         public IActionResult Minus(int cartId)
         {
-            var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(u => u.Id == cartId);
+            var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(u => u.Id == cartId, tracked: true);
             if (cartFromDb.Count <= 1)
             {
                 //remove that from cart
                 _unitOfWork.ShoppingCartRepository.Remove(cartFromDb);
+                HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCartRepository.GetAll(
+              u => u.ApplicationUserId == cartFromDb.ApplicationUserId
+              ).Count() - 1);
             }
             else
             {
@@ -244,8 +246,13 @@ namespace BullkyBookWeb.Areas.Customer.Controllers
 
         public IActionResult Remove(int cartId)
         {
-            var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(u => u.Id == cartId);
+            var cartFromDb = _unitOfWork.ShoppingCartRepository.Get(u => u.Id == cartId,tracked:true);
+
+          
             _unitOfWork.ShoppingCartRepository.Remove(cartFromDb);
+            HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCartRepository.GetAll(
+              u => u.ApplicationUserId == cartFromDb.ApplicationUserId
+              ).Count() - 1);
             _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }

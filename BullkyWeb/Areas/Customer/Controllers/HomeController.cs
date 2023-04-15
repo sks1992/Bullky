@@ -1,6 +1,8 @@
 ﻿using BullkyBook.DataAccess.Repository.IRepository;
 using BullkyBook.Models;
+using BullkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -33,37 +35,40 @@ namespace BullkyBookWeb.Areas.Customer.Controllers
                 ProductId = productId
             };
 
-        
+
             return View(cart);
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult Details(ShoppingCart shoppingCart) 
+        public IActionResult Details(ShoppingCart shoppingCart)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
-           var userId =claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             shoppingCart.ApplicationUserId = userId;
 
-            ShoppingCart cartFromDb =_unitOfWork.ShoppingCartRepository.Get(u=>u.ApplicationUserId ==userId
-             && u.ProductId== shoppingCart.ProductId);
+            ShoppingCart cartFromDb = _unitOfWork.ShoppingCartRepository.Get(u => u.ApplicationUserId == userId
+             && u.ProductId == shoppingCart.ProductId);
 
-            if(cartFromDb != null)
+            if (cartFromDb != null)
             {
                 //shopping cart exist
                 cartFromDb.Count += shoppingCart.Count;
                 _unitOfWork.ShoppingCartRepository.Update(cartFromDb);
+                _unitOfWork.Save();
             }
             else
             {
                 //add card recoprd
                 _unitOfWork.ShoppingCartRepository.Add(shoppingCart);
+                _unitOfWork.Save();
+                HttpContext.Session.SetInt32(SD.SessionCart,
+                    _unitOfWork.ShoppingCartRepository.GetAll(
+                        u => u.ApplicationUserId == userId).Count());
             }
 
             TempData["success"] = "Card update Successful";
-            _unitOfWork.Save();
-
             return RedirectToAction("Index");
         }
 
